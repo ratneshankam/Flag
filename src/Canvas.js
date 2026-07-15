@@ -7,6 +7,8 @@ var gFpsCounter = null;
 var camMove = false;
 var firstMouse = true;
 
+var lastTap = 0;
+
 var requestAnimationFrame = window.requestAnimationFrame ||         // Chrome
     window.mozRequestAnimationFrame ||      // Mozilla
     window.webkitRequestAnimationFrame ||   // Safari
@@ -41,6 +43,8 @@ function main() {
     window.addEventListener("mousemove", mouseMove, false);
     window.addEventListener("mouseup", mouseButton, false);
     window.addEventListener("resize", resize, false);
+    window.addEventListener("touchstart", onTouchStart, false);
+    window.addEventListener("dblclick", onDoubleClick, false);
 
     const fps = document.getElementById("fps");
     if (fps) {
@@ -261,3 +265,20 @@ function uninitialize() {
     window.removeEventListener("resize", resize, false);
 }
 
+function onDoubleClick(event)
+{
+    toggleFullscreen();
+}
+
+function onTouchStart(event)
+{
+    const now = Date.now();
+
+    if (now - lastTap < 300)
+    {
+        event.preventDefault();
+        toggleFullscreen();
+    }
+
+    lastTap = now;
+}
