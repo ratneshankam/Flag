@@ -29,6 +29,8 @@ function main() {
     canvas_original_width = canvas.width;
     canvas_original_height = canvas.height;
 
+    canvas.style.touchAction = "manipulation";
+    
     // Initialize
     initialize();
 
