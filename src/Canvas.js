@@ -30,7 +30,7 @@ function main() {
     canvas_original_height = canvas.height;
 
     canvas.style.touchAction = "manipulation";
-    
+
     // Initialize
     initialize();
 
@@ -54,7 +54,7 @@ function main() {
     }
 }
 
-function toggleFullscreen() {
+async function toggleFullscreen() {
     const fullscreenElement = document.fullscreenElement ||
         document.mozFullScreenElement ||
         document.webkitFullscreenElement ||
@@ -71,6 +71,29 @@ function toggleFullscreen() {
         else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
         else if (document.msExitFullscreen) document.msExitFullscreen();
+        bFullscreen = false;
+    }
+
+    if (!fullscreenElement) {
+        await canvas.requestFullscreen();
+
+        if (screen.orientation && screen.orientation.lock) {
+            try {
+                await screen.orientation.lock("landscape");
+            }
+            catch (err) {
+                console.log("Orientation lock failed:", err);
+            }
+        }
+
+        bFullscreen = true;
+    }
+    else {
+        if (screen.orientation && screen.orientation.unlock)
+            screen.orientation.unlock();
+
+        document.exitFullscreen();
+
         bFullscreen = false;
     }
 }
@@ -139,8 +162,7 @@ function display() {
     // code
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    if (timer > 100) 
-    { 
+    if (timer > 100) {
         if (currentScene < 3) {
             let scene = scenes[currentScene];
             if (!scene.sceneComplete) {
@@ -267,17 +289,15 @@ function uninitialize() {
     window.removeEventListener("resize", resize, false);
 }
 
-function onDoubleClick(event)
-{
+function onDoubleClick(event) {
     toggleFullscreen();
+    audio.play();
 }
 
-function onTouchStart(event)
-{
+function onTouchStart(event) {
     const now = Date.now();
 
-    if (now - lastTap < 300)
-    {
+    if (now - lastTap < 300) {
         event.preventDefault();
         toggleFullscreen();
     }
